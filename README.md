@@ -1,7 +1,7 @@
 # ChatApp
 Chat application of users and rooms. Based on Socket IO , React, Redux, Node JS
 
-![ChatApp](https://images-na.ssl-images-amazon.com/images/I/51o-qd2E1PL.png)
+![ChatApp](https://iili.io/ooBqrl.png)
 
 This is a realtime chatting application developed using React.js, Node.js & Socket.io.
 ChatApp is dedicated to group messaging. Users can share text-based messages with their Friends who are in the same room.
