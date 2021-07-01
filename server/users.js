@@ -1,5 +1,12 @@
 const users = [];
 
+/**
+ * Add new user to the room room
+ * @param id:string
+ * @param userName:string
+ * @param roomName:object
+ * @return {User} user 
+ */
 const addUser = ({id, name, room})=>{
   name=name.trim().toLowerCase();
   room=room.trim().toLowerCase();
@@ -15,6 +22,11 @@ const addUser = ({id, name, room})=>{
   return {user};
 }
 
+/**
+ * Remove exist user to the room room
+ * @param id:string
+ * @return {Users} user 
+ */
 const removeUser = (id)=>{
   const index = users.findIndex((user)=>user.id===id);
   if(index !== -1){
@@ -22,10 +34,20 @@ const removeUser = (id)=>{
   }
 }
 
+/**
+ * Get user by id
+ * @param id:string
+ * @return {User} user 
+ */
 const getUser = (id)=>{
   return users.find((user)=>user.id === id)
 }
 
+/**
+ * Get all users of a spetcific room
+ * @param room:string
+ * @return {Users} user 
+ */
 const getUsersOfRoom = (room)=> users.filter((user)=>user.room === room);
 
 module.exports = {addUser, removeUser, getUser, getUsersOfRoom};

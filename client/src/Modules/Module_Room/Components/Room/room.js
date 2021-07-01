@@ -38,6 +38,12 @@ const Room = ({ selectedRoom, rooms, storeuUsers, userName, userImage }) => {
 
   useEffect(() => {
     setRoomName(rooms[selectedRoom].roomName);
+    store.subscribe(()=>{
+      console.log('store updated');
+      console.log(store.getState().me);
+      setUsers(store.getState().me.userName)
+    })
+    console.log(roomName);
     usersPerRooms();
     
     socketConnection();
@@ -51,7 +57,6 @@ const Room = ({ selectedRoom, rooms, storeuUsers, userName, userImage }) => {
     setRoom(rooms[selectedRoom].roomName);
     emitToRoom();
     console.log(name);
-    console.log(store.getState().me);
     return () => {
       socketDisconnection();
     };

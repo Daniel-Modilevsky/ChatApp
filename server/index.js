@@ -1,63 +1,90 @@
-const express = require('express');
-const socketio = require('socket.io');
-const http = require('http');
+const express = require("express");
+const helmet = require("helmet");
+const socketio = require("socket.io");
+const http = require("http");
+const logger = require("./lib/logger");
 
-const {addUser, removeUser, getUser, getUsersOfRoom} = require('./users')
+const { addUser, removeUser, getUser, getUsersOfRoom } = require("./users");
 
 const PORT = process.env.PORT || 8000;
 
-const router = require('./router');
+const router = require("./router");
 
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
-const cors = require('cors');
+const cors = require("cors");
 
-io.on('connection', (socket)=>{
-  socket.on('join',({name, room},callback)=>{
-    console.log(name);
-    console.log(room);
-    const {error, user} = addUser({id:socket.id, name, room});
+io.on("connection", (socket) => {
+  connection(socket);
+  SendingMassage(socket);
+  disconnection(socket);
+});
 
-    if(error)
-      return callback(error);
+const connection = (socket) => {
+  socket.on("join", ({ name, room }, callback) => {
+    logger.http(`${name} joined to room ${room}`);
+    const { error, user } = addUser({ id: socket.id, name, room });
+
+    if (error) return callback(error);
 
     socket.join(user.room);
 
-    //admin generated messages are called 'message'
-    //welcome message for user
-    socket.emit('message',{user:"admin",text:`${user.name}, welcome to the room ${user.room}`})
-
+    emitAsdmin(socket, name, room);
     //message to all the users of that room except the newly joined user
-    socket.broadcast.to(user.room).emit('message',{user:'admin',text:`${user.name} has joined`});
+    socket.broadcast
+      .to(user.room)
+      .emit("message", { user: "admin", text: `${user.name} has joined` });
 
-
-    io.to(user.room).emit('roomData',{room:user.room, users:getUsersOfRoom(user.room)})
-
-    callback();
-  })
-
-  //user generated message are called 'sendMessage'
-  socket.on('sendMessage',(message, callback) => {
-    console.log(message);
-    const user = getUser(socket.id);
-    io.to(user.room).emit('message',{user:user.name, text:message});
-    io.to(user.room).emit('roomData',{room:user.room, users:getUsersOfRoom(user.room)});
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersOfRoom(user.room),
+    });
 
     callback();
-  })
+  });
+};
 
-  socket.on('disconnect',()=>{
+const disconnection = (socket) => {
+  socket.on("disconnect", () => {
     const user = removeUser(socket.id);
-    if(user){
-      io.to(user.room).emit('message',{user:'admin',text:`${user.name} has left.`})
+    if (user) {
+      io.to(user.room).emit("message", {
+        user: "admin",
+        text: `${user.name} has left.`,
+      });
     }
-  })
-})
+  });
+};
+
+const SendingMassage = (socket) => {
+  //user generated message are called 'sendMessage'
+  socket.on("sendMessage", (message, callback) => {
+    logger.info(message);
+    const user = getUser(socket.id);
+    io.to(user.room).emit("message", { user: user.name, text: message });
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersOfRoom(user.room),
+    });
+
+    callback();
+  });
+};
+
+const emitAsdmin = (socket, name, room) => {
+  //admin generated messages are called 'message'
+  //welcome message for user
+  socket.emit("message", {
+    user: "admin",
+    text: `${user.name}, welcome to the room ${user.room}`,
+  });
+};
 
 app.use(router);
 app.use(cors());
+app.use(helmet);
 
-server.listen(PORT, ()=>{
-  console.log(`Server Started on PORT ${PORT}`)
-})
+server.listen(PORT, () => {
+  logger.info(`Server Started on PORT ${PORT}`);
+});

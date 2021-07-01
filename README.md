@@ -21,16 +21,19 @@ Users can registred to the app and create rooms for chating.
 - Receive Messages
 - See online users in a room
 
+![Use Case](https://i.imgur.com/bInriug.png)
 
 ## 🏃‍ Local Installation
 
 1. Clone the Repo by going to your local Git Client and pushing in the command:
 https://github.com/mechiragjain/Chat-Application.git
 or download.
-2. cd server.
-3. npm start.
+2. $cd server.
+3. $npm start.
 4. open another terminal.
-5. cd ../
-6. cd client
-7. npm start.
+5. $cd ../
+6. $cd client
+7. $npm start.
 8. At last, push in the command under client-user directory which will kickstart the application on Local Host:
+
+Daniel Modilevsky
