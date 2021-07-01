@@ -57,6 +57,8 @@ const Room = ({ selectedRoom, rooms, storeuUsers, userName, userImage }) => {
     };
   }, [ ENDPOINT , userName, selectedRoom]);
 
+  
+
   //to update messages array whenever a message is sent by admin or user
   useEffect(() => {
     socket.on("message", (message) => {
@@ -67,12 +69,7 @@ const Room = ({ selectedRoom, rooms, storeuUsers, userName, userImage }) => {
     });
   }, [messages]);
 
-  // useEffect(() => {
-  //   socketDisconnection();
-  //   socketConnection();
-  //   setRoom(rooms[selectedRoom].roomName);
-
-  // }, [selectedRoom]);
+ 
   
   //=============SOCKET-HANDLERS================
   /**
