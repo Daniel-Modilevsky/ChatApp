@@ -11,6 +11,17 @@ const addUser = ({id, name, room})=>{
   name=name.trim().toLowerCase();
   room=room.trim().toLowerCase();
 
+  /*
+    if (name && room) {
+    name = name.trim().toLowerCase();
+    room = room.trim().toLowerCase();
+  }
+  else{
+    name = 'admin';
+    room = 'Lobby';
+  } 
+  */
+
   const existingUserCheck = users.find((user)=>user.room === room && user.name === name);
   if(existingUserCheck){
     return {error:'Username is already taken'};

@@ -6,11 +6,6 @@ import { BrowserRouter } from "react-router-dom";
 import store from "./Reducers/Store";
 import { Provider } from "react-redux";
 
-store.subscribe(()=>{
-  console.log('store updated');
-  console.log(store.getState().me);
-})
-
 ReactDOM.render(
   <BrowserRouter>
     <Provider store={store}>

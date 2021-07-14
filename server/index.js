@@ -30,7 +30,7 @@ const connection = (socket) => {
 
     socket.join(user.room);
 
-    emitAsdmin(socket, name, room);
+    emitAsdmin(socket, user);
     //message to all the users of that room except the newly joined user
     socket.broadcast
       .to(user.room)
@@ -72,7 +72,7 @@ const SendingMassage = (socket) => {
   });
 };
 
-const emitAsdmin = (socket, name, room) => {
+const emitAsdmin = (socket, user) => {
   //admin generated messages are called 'message'
   //welcome message for user
   socket.emit("message", {

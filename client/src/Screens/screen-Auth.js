@@ -16,6 +16,7 @@ import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import IconButton from "@material-ui/core/IconButton";
 import defUserPic from "../static/user.png";
 import logo from "../static/chatApp.png";
+import { useHistory } from "react-router-dom";
 
 /*REDUCER-CONNECTION*/
 function mapStateToProps(state) {
@@ -34,8 +35,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 const Auth = ({ userss, userName, userImage, setterMe, setterUsers }) => {
-  const [newUserPic, setNewUserPic] = React.useState("");
-  const [newUserName, setNewUserName] = React.useState("User Name...");
+  const [newUserPic, setNewUserPic] = React.useState(userImage);
+  const [newUserName, setNewUserName] = React.useState("");
 
   const [users, setUsers] = React.useState(userss);
 
@@ -43,17 +44,23 @@ const Auth = ({ userss, userName, userImage, setterMe, setterUsers }) => {
   const [errorFlag, setErrorFlag] = React.useState(false);
 
   const classes = useStyles();
+  const history = useHistory();
 
   React.useEffect(() => {
-    setNewUserPic(userImage);
+    if(userName!=='user' && userName!==undefined){
+      gotoHomepage();
+    }
+  }, [userName]);
 
-    // setNewUserName(userName)
-  }, [userName, userImage]);
 
   //EVENT-HANDLERS
   const handleNewUserName = (event) => {
     setNewUserName(event.target.value);
   };
+
+  function gotoHomepage() {
+    history.push("/homepage");
+  }
 
   const memoizedHandleClick = React.useCallback((e) => {
     setNewUserPic(URL.createObjectURL(e.target.files[0]));
@@ -71,7 +78,10 @@ const Auth = ({ userss, userName, userImage, setterMe, setterUsers }) => {
 
     setterMe(newUserName, newUserPic);
     setterUsers(newUserName, newUserPic);
-    window.location.replace("/homepage");
+    const me = {
+      userName:newUserName,
+      userImage: newUserPic
+    };
   };
 
   const validForm = () => {

@@ -10,7 +10,7 @@ import ScrollToBottom from "react-scroll-to-bottom";
 import ROOMUSERS from "../../../../data/RoomUsers.Data";
 
 import { connect } from "react-redux";
-import store from "../../../../Reducers/Store";
+import { useHistory } from "react-router-dom";
 
 //=============REDUCER-CONNECTION================
 function mapStateToProps(state) {
@@ -35,36 +35,32 @@ const Room = ({ selectedRoom, rooms, storeuUsers, userName, userImage }) => {
   const [roomName, setRoomName] = useState(rooms[0].roomName);
   const [filteredUsers, setFilteredUsers] = useState(null);
   const ENDPOINT = "localhost:8000";
-
+  const history = useHistory();
+  
+  // Listener for authentication
   useEffect(() => {
-    setRoomName(rooms[selectedRoom].roomName);
-    store.subscribe(()=>{
-      console.log('store updated');
-      console.log(store.getState().me);
-      setUsers(store.getState().me.userName)
-    })
-    console.log(roomName);
-    usersPerRooms();
-    
-    socketConnection();
-    store.subscribe(()=>{
-      console.log('store updated');
-      console.log(store.getState().me.userName);
-      setName(store.getState().me.userName);
-    })
-    
+    if (userName === "user" || userName === undefined) {
+      goto401page();
+    }
+  }, [userName]);
 
-    setRoom(rooms[selectedRoom].roomName);
+  // Listener for socket connection
+  useEffect(() => {
+    socketConnection();
     emitToRoom();
-    console.log(name);
     return () => {
       socketDisconnection();
     };
-  }, [ ENDPOINT , userName, selectedRoom]);
+  }, [ENDPOINT]);
 
-  
+  // Listener for changing rooms
+  useEffect(() => {
+    setRoomName(rooms[selectedRoom].roomName);
+    usersPerRooms();
+    setRoom(rooms[selectedRoom].roomName);
+  }, [selectedRoom]);
 
-  //to update messages array whenever a message is sent by admin or user
+  //Listener for update messages array whenever a message is sent by admin or user
   useEffect(() => {
     socket.on("message", (message) => {
       setMessages([...messages, message]);
@@ -74,8 +70,6 @@ const Room = ({ selectedRoom, rooms, storeuUsers, userName, userImage }) => {
     });
   }, [messages]);
 
- 
-  
   //=============SOCKET-HANDLERS================
   /**
    * Create socket connection
@@ -132,6 +126,10 @@ const Room = ({ selectedRoom, rooms, storeuUsers, userName, userImage }) => {
     }
   };
 
+  function goto401page() {
+    history.push("/401");
+  }
+
   /**
    * join between room's users and users
    * @param {Array[objects]} filteredUsers
@@ -158,7 +156,7 @@ const Room = ({ selectedRoom, rooms, storeuUsers, userName, userImage }) => {
       });
     }
     result.splice(0, 1);
-    setFilteredUsers(result);
+    setFilteredUsers([ {userName, userImage}, ...result]);
   };
 
   return (
